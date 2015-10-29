@@ -332,6 +332,7 @@ public class UMLParser {
 //                    }
                 }
                 else if(Imod == 2){
+                    //
                     String strSetmtd;
                     String strGetmtd;
 
