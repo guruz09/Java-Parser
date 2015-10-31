@@ -292,32 +292,19 @@ public class UMLParser {
                     if(strStmt.contains("new ")){
                         refer = (strStmt.split(" "))[0];
 
-                        for (String cls : lAllClassList) {
-
-                            if (refer.equals(cls)) {
-                                if (!lAssocList.isEmpty()) {
-                                    for (String exist : lAssocList) {
-                                        if (refer.equals(exist)) {
-                                            refer = "";
-
-                                        }
+                        if(lAllClassList.contains(refer)){
+                            if (!lUsesList.isEmpty()) {
+                                for (String name : lUsesList) {
+                                    if (refer.equals(name)) {
+                                        refer = "";
                                     }
-                                }
-
-                                if (!refer.isEmpty()){
-
-                                    if (!lAllAssocList.isEmpty()) {
-                                        if(!lAllAssocList.contains(refer+":"+strCls)){
-                                            lAssocList.add(refer);
-                                            lAllAssocList.add(strCls+":"+refer);
-                                        }
-                                    }else{
-                                        lAssocList.add(refer);
-                                        lAllAssocList.add(strCls+":"+refer);
-                                    }
-
                                 }
                             }
+
+                            if (!refer.isEmpty()) {
+                                lUsesList.add(refer);
+                            }
+
                         }
                     }
                 }
@@ -393,7 +380,6 @@ public class UMLParser {
                         else
                             strSource += "- " + var  + ":" + strType + "\n";
 
-
                     }
 //                    for (String temp : lClassList) {
 //
@@ -467,7 +453,6 @@ public class UMLParser {
                 }
             }
 
-
             if(!lUsesList.isEmpty()&& !lUsesList.contains(strCls)){
                 for (String temp : lUsesList) {
                     if(!(temp.equals(strCls))){
@@ -475,7 +460,6 @@ public class UMLParser {
                     }
                 }
             }
-
 
             if(!lAssocList.isEmpty() && !lAssocList.contains(strCls)){
                 for (String ass : lAssocList) {
