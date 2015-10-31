@@ -1,32 +1,16 @@
 import com.github.javaparser.ast.CompilationUnit;
-
 import com.github.javaparser.JavaParser;
-import com.github.javaparser.ParseException;
-import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.*;
-import  com.github.javaparser.ast.body.*;
-import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.Statement;
-import com.github.javaparser.ast.type.ClassOrInterfaceType;
-import com.github.javaparser.ast.visitor.VoidVisitor;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-import net.sourceforge.plantuml.GeneratedImage;
-import net.sourceforge.plantuml.SourceFileReader;
 import net.sourceforge.plantuml.SourceStringReader;
-import javax.print.DocFlavor;
 import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 
 /**
  * Created by Raghu on 10/25/2015.
@@ -39,6 +23,8 @@ public class UMLParser {
     public static String strRelations = "";
     public static String strUses = "";
     public static String strCls = "";
+    public static boolean bInterface = false;
+
 
     public  static  boolean bCallFirst = true;
 
@@ -104,6 +90,9 @@ public class UMLParser {
 
                 new GetImplementsAndExtends().visit(cu, null);
 
+//                if(bInterface)
+//                    continue;
+
                // bCallFirst = true;
                 new MethodVisitor1().visit(cu, null);
 
@@ -113,6 +102,8 @@ public class UMLParser {
 
               //  bCallFirst = false;
                 new MethodVisitor().visit(cu, null);
+
+                new MethodVisitor3().visit(cu,null);
 
                 new GetClassDetails().getUsesList();
 
@@ -180,6 +171,7 @@ public class UMLParser {
 
             if (n.isInterface()) {
                 strSource += "interface " + strCls + " {\n";
+                //bInterface = true;
             } else {
                 strSource += "class " + strCls + " {\n";
             }
@@ -201,7 +193,9 @@ public class UMLParser {
             if (iterator2.hasNext()) {
                 while (iterator2.hasNext()) {
                     name = iterator2.next().toString();
+                    //Ball socket
                     strRelations += name + " <|.. " + strCls + ": interface" + "\n";
+                    strRelations += name + "0- " + strCls + "\n";
 //                    if(!lInterfaceList.contains(name)){
 //                        lInterfaceList.add(name);
 //                    }
@@ -285,6 +279,52 @@ public class UMLParser {
                 }
 
         }
+    }
+
+    private  static class MethodVisitor3 extends VoidVisitorAdapter{
+        @Override
+        public void visit(MethodDeclaration n, Object arg) {
+            if(n.getBody() != null){
+                List<Statement> st = n.getBody().getStmts();
+                String refer = "";
+                for(Statement s : st){
+                    String strStmt = s.toString();
+                    if(strStmt.contains("new ")){
+                        refer = (strStmt.split(" "))[0];
+
+                        for (String cls : lAllClassList) {
+
+                            if (refer.equals(cls)) {
+                                if (!lAssocList.isEmpty()) {
+                                    for (String exist : lAssocList) {
+                                        if (refer.equals(exist)) {
+                                            refer = "";
+
+                                        }
+                                    }
+                                }
+
+                                if (!refer.isEmpty()){
+
+                                    if (!lAllAssocList.isEmpty()) {
+                                        if(!lAllAssocList.contains(refer+":"+strCls)){
+                                            lAssocList.add(refer);
+                                            lAllAssocList.add(strCls+":"+refer);
+                                        }
+                                    }else{
+                                        lAssocList.add(refer);
+                                        lAllAssocList.add(strCls+":"+refer);
+                                    }
+
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
     }
 
     private static class MemberVisitor extends VoidVisitorAdapter {
