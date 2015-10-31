@@ -14,7 +14,9 @@ import java.io.FileInputStream;
 
 /**
  * Created by Raghu on 10/25/2015.
+ * This program will read all the .java files from give source location, parse it and create its equivalent UML class diagram
  */
+
 public class UMLParser {
 
     //Global Variables
@@ -90,17 +92,12 @@ public class UMLParser {
 
                 new GetImplementsAndExtends().visit(cu, null);
 
-//                if(bInterface)
-//                    continue;
-
-               // bCallFirst = true;
                 new MethodVisitor1().visit(cu, null);
 
                 new MemberVisitor().visit(cu,null);
 
                 new ConstructorVisitor().visit(cu, null);
 
-              //  bCallFirst = false;
                 new MethodVisitor().visit(cu, null);
 
                 new MethodVisitor3().visit(cu,null);
@@ -135,6 +132,7 @@ public class UMLParser {
 
         OutputStream png = new FileOutputStream(dest);
         SourceStringReader myreader = new SourceStringReader(strSource);
+
         // Write the UML diagram to png
         String desc = myreader.generateImage(png);
         // Return a null string if no generation
@@ -193,12 +191,7 @@ public class UMLParser {
             if (iterator2.hasNext()) {
                 while (iterator2.hasNext()) {
                     name = iterator2.next().toString();
-                    //Ball socket
                     strRelations += name + " <|.. " + strCls + ": interface" + "\n";
-                    strRelations += name + "0- " + strCls + "\n";
-//                    if(!lInterfaceList.contains(name)){
-//                        lInterfaceList.add(name);
-//                    }
                 }
             }
 
@@ -273,11 +266,9 @@ public class UMLParser {
 
             int iMod = n.getModifiers();
 
-
-                if(iMod == 1) {
+            if(iMod == 1) {
                     lMethodlist.add(strMethd.toUpperCase());
                 }
-
         }
     }
 
@@ -310,8 +301,6 @@ public class UMLParser {
                 }
             }
         }
-
-
     }
 
     private static class MemberVisitor extends VoidVisitorAdapter {
@@ -338,25 +327,6 @@ public class UMLParser {
                         strSource += "+ " + mylist.get(i)  + ":" + strType + "\n";
                     else
                         strSource += "+ " + var  + ":" + strType + "\n";
-
-//                    for (String temp : lClassList) {
-//
-//                        if (strType.equals(temp)) {
-//
-//                            if (!lUsesList.isEmpty()) {
-//                                for (String name : lUsesList) {
-//                                    if (strType.equals(name)) {
-//                                        strType = "";
-//                                    }
-//                                }
-//                            }
-//
-//                            if (!strType.isEmpty()) {
-//                                lUsesList.add(strType);
-//                                System.out.println(lUsesList);
-//                            }
-//                        }
-//                    }
                 }
                 else if(Imod == 2){
                     //
@@ -381,24 +351,6 @@ public class UMLParser {
                             strSource += "- " + var  + ":" + strType + "\n";
 
                     }
-//                    for (String temp : lClassList) {
-//
-//                        if (strType.equals(temp)) {
-//
-//                            if (!lUsesList.isEmpty()) {
-//                                for (String name : lUsesList) {
-//                                    if (strType.equals(name)) {
-//                                        strType = "";
-//                                    }
-//                                }
-//                            }
-//
-//                            if (!strType.isEmpty()) {
-//                                lUsesList.add(strType);
-//                                System.out.println(lUsesList);
-//                            }
-//                        }
-//                    }
                 }
 
 
@@ -411,7 +363,6 @@ public class UMLParser {
                             for (String exist : lAssocList) {
                                 if (strType.equals(exist)) {
                                     strType = "";
-
                                 }
                             }
                         }
@@ -468,10 +419,8 @@ public class UMLParser {
                     }
                 }
             }
-
             lUsesList.clear();
         }
-
     }
 
     private static class MethodVisitor extends VoidVisitorAdapter {
